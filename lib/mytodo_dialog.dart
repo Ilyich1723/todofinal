@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:todofinal/service/todo_database_service.dart';
 
 class TodoDialog extends StatelessWidget {
-  const TodoDialog({super.key, required this.todoTitleController,required this.todoDescriptionController});
+  const TodoDialog(
+      {super.key,
+      required this.todoTitleController,
+      required this.todoDescriptionController});
   final TextEditingController todoTitleController;
   final TextEditingController todoDescriptionController;
 
@@ -53,9 +56,11 @@ class TodoDialog extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: ElevatedButton(
             onPressed: () async {
-              if (todoTitleController.text.isNotEmpty && todoDescriptionController.text.isNotEmpty) {
-                await ToDoDatabaseService()
-                    .createNewTodo(todoTitleController.text.trim(), todoDescriptionController.text.trim());
+              if (todoTitleController.text.isNotEmpty &&
+                  todoDescriptionController.text.isNotEmpty) {
+                await ToDoDatabaseService().createNewTodo(
+                    todoTitleController.text.trim(),
+                    todoDescriptionController.text.trim());
               }
               // For Dismiss the dialog
               Navigator.pop(context);
