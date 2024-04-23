@@ -4,7 +4,6 @@ import 'package:todofinal/model/todo_model.dart';
 import 'package:todofinal/mytodo_dialog.dart';
 import 'package:todofinal/service/todo_database_service.dart';
 
-
 class TodoList extends StatefulWidget {
   const TodoList({super.key});
 
@@ -14,7 +13,9 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   TextEditingController todoTitleController = TextEditingController();
-  TextEditingController todoEditController = TextEditingController(); 
+  TextEditingController todoDescriptionController = TextEditingController();
+  TextEditingController todoEditController = TextEditingController();
+  TextEditingController todoEditDescriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,9 @@ class _TodoListState extends State<TodoList> {
                     const Text(
                       "Список дел",
                       style: TextStyle(
-                          fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                     const SizedBox(
                       height: 10,
@@ -81,7 +84,7 @@ class _TodoListState extends State<TodoList> {
                                   height: 25,
                                   width: 25,
                                   decoration: const BoxDecoration(
-                                     color: Colors.white,
+                                    color: Colors.white,
                                     shape: BoxShape.rectangle,
                                   ),
                                   child: todo[index].isCompleted
@@ -98,6 +101,14 @@ class _TodoListState extends State<TodoList> {
                                     fontSize: 23,
                                   ),
                                 ),
+                                subtitle: Text(
+                                  todo[index]
+                                      .description, // отображение описания задачи
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
                                 trailing: IconButton(
                                   icon: Icon(Icons.edit, color: Colors.white),
                                   onPressed: () {
@@ -107,29 +118,53 @@ class _TodoListState extends State<TodoList> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           title: Text('Редактировать задачу'),
-                                          content: TextFormField(
-                                            controller: todoEditController,
-                                            style: const TextStyle(fontSize: 20, color: Colors.black),
-                                            autofocus: true,
-                                            decoration: const InputDecoration(
-                                                hintText: "укажите вашу задачу",
-                                                hintStyle: TextStyle(color: Colors.black)),
+                                          content: Column(
+                                            children: [
+                                              TextFormField(
+                                                controller: todoEditController,
+                                                decoration: InputDecoration(
+                                                    hintText:
+                                                        'укажите вашу задачу'),
+                                              ),
+                                              TextFormField(
+                                                controller:
+                                                    todoEditDescriptionController,
+                                                decoration: InputDecoration(
+                                                    hintText:
+                                                        'укажите описание вашей задачи'),
+                                              ),
+                                            ],
                                           ),
                                           actions: [
                                             TextButton(
                                               child: Text('Сохранить'),
                                               onPressed: () async {
-                                                if (todoEditController.text.isNotEmpty) {
+                                                if (todoEditController
+                                                        .text.isNotEmpty &&
+                                                    todoEditDescriptionController
+                                                        .text.isNotEmpty) {
                                                   await ToDoDatabaseService()
-                                                      .updateTaskTitle(todo[index].uid, todoEditController.text.trim());
+                                                      .updateTaskTitle(
+                                                          todo[index].uid,
+                                                          todoEditController
+                                                              .text
+                                                              .trim());
+                                                  await ToDoDatabaseService()
+                                                      .updateTaskDescription(
+                                                          todo[index].uid,
+                                                          todoEditDescriptionController
+                                                              .text
+                                                              .trim());
                                                   Navigator.of(context).pop();
                                                   todoEditController.clear();
+                                                  todoEditDescriptionController
+                                                      .clear();
                                                 }
                                               },
                                             ),
                                           ],
                                         );
-                                      }
+                                      },
                                     );
                                   },
                                 ),
@@ -142,14 +177,19 @@ class _TodoListState extends State<TodoList> {
                   ],
                 ),
               );
-            })),
+            },
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
           showDialog(
             context: context,
-            builder: ((context) => TodoDialog(todoTitleController: todoTitleController)),
+            builder: (context) => TodoDialog(
+              todoTitleController: todoTitleController,
+              todoDescriptionController: todoDescriptionController,
+            ),
           );
         },
         child: const Icon(Icons.add),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:todofinal/model/todo_model.dart';
 
 
@@ -6,32 +7,39 @@ class ToDoDatabaseService {
   CollectionReference toDoCollection =
       FirebaseFirestore.instance.collection("ToDoList");
 
-      //For ToDo order based on their addin times
+      
       Stream <List<TodoModel>> listTodo(){
         return toDoCollection.orderBy("Timestamp",descending:true)
         .snapshots()
         .map(todoFromFirestore);
 
-      }// after that the most recemt added items are top on the list
-  Future createNewTodo(String title) async{
-    return await toDoCollection.add({
-      "title":title,
-      "isCompleted":false,
-      "Timestamp":FieldValue.serverTimestamp(),
+      }
+  Future createNewTodo(String title, String description) async {
+  return await toDoCollection.add({
+    "title": title,
+    "description": description,
+    "isCompleted": false,
+    "Timestamp": FieldValue.serverTimestamp(),
+  });
 
-    });
+
 
   }
-  //For updating the ToDo
+  //выполнено/не выполнено
   Future updateTask(uid,bool newCompletedTask) async{
     await toDoCollection.doc(uid).update({"isCompleted":newCompletedTask});
 
   }
+Future updateTaskDescription(String uid, String newDescription) async {
+  await toDoCollection.doc(uid).update({"description": newDescription});
+}
+
+
 Future updateTaskTitle(String uid, String newTitle) async {
   await toDoCollection.doc(uid).update({"title": newTitle});
 }
 
-// For delete the ToDo
+// удаления
 Future deleteTodo(uid) async{
   await toDoCollection.doc(uid).delete();
 
@@ -45,7 +53,8 @@ return TodoModel(
   
   isCompleted: data?['isCompleted']?? false,
   title: data?['title'] ?? "",
-  uid: e.id);
+  uid: e.id,
+  description: data?['description'] ?? "",);
 
   }).toList();
 }
