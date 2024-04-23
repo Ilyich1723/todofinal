@@ -22,14 +22,14 @@ class ToDoDatabaseService {
     });
 
   }
-  Future updateTaskTitle(String uid, String newTitle) async {
-    await toDoCollection.doc(uid).update({"title": newTitle});
-}
   //For updating the ToDo
   Future updateTask(uid,bool newCompletedTask) async{
     await toDoCollection.doc(uid).update({"isCompleted":newCompletedTask});
 
   }
+Future updateTaskTitle(String uid, String newTitle) async {
+  await toDoCollection.doc(uid).update({"title": newTitle});
+}
 
 // For delete the ToDo
 Future deleteTodo(uid) async{
